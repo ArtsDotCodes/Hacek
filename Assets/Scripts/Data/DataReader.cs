@@ -27,12 +27,11 @@ public class DataReader : MonoBehaviour {
             }
             else if (railData[int.Parse(splitLine[0]), 0, 0] == splitLine[0])
             {
+                //inefficient
                 int i = 1;
                 while (railData[int.Parse(splitLine[0]), i, 0] != null)
                 {
                     ++i;
-                    if(i > 1995)
-                        print(splitLine[0] + ", " + i + ", " + 0);
                 }
 
                 for (int j = 0; j < splitLine.Length; j++)
