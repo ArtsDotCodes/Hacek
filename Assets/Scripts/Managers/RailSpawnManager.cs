@@ -3,22 +3,22 @@ using System.Collections;
 
 public class RailSpawnManager : MonoBehaviour {
 
-    private int numObjects = 1062;
     private GameObject railMakerPrefab;
 
-    void Start()
+    public void BeginSpawning()
     {
-        print(ResourcePaths.TrailMakerPrefabPath);
         railMakerPrefab = (GameObject)Resources.Load(ResourcePaths.TrailMakerPrefabPath);
 
-        print(railMakerPrefab);
-
         Vector3 center = transform.position;
-        for (int i = 0; i < numObjects; i++)
+        for (int i = 0; i < GameManager.railData.GetLength(0); i++)
         {
-            Vector3 pos = RandomCircle(center, 50.0f);
-            Quaternion rot = Quaternion.FromToRotation(Vector3.forward, center - pos);
-            Instantiate(railMakerPrefab, pos, rot);
+            if(GameManager.railData[i, 0, 0] != null)
+            {
+                Vector3 pos = RandomCircle(center, 50.0f);
+                Quaternion rot = Quaternion.FromToRotation(Vector3.forward, center - pos);
+                RailHandler rh = ((GameObject)Instantiate(railMakerPrefab, pos, rot)).GetComponent<RailHandler>();
+                rh.SetRailIndex(i);
+            }
         }
     }
 

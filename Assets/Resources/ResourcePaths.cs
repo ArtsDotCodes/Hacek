@@ -18,5 +18,5 @@ public class ResourcePaths {
     private static readonly string PrefabPath = "Prefabs/";
     private static readonly string TestPrefabPath = PrefabPath + "Tests/";
     private static readonly string TrailTestPrefabPath = TestPrefabPath + "TrailTest/";
-    public static readonly string TrailMakerPrefabPath = TrailTestPrefabPath + "TrailMaker";
+    public static readonly string TrailMakerPrefabPath = TrailTestPrefabPath + "TrailMaker2";
 }

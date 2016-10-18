@@ -9,5 +9,6 @@ public class GameManager : MonoBehaviour {
     public static void SetRailData(string[,,] railData)
     {
         GameManager.railData = railData;
+        FindObjectOfType<RailSpawnManager>().BeginSpawning();
     }
 }
