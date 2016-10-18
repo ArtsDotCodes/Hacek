@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 public class PlayerHitboxHandler : MonoBehaviour {
 
-    [SerializeField]private List<GameObject> rails = new List<GameObject>();
+    private List<GameObject> rails = new List<GameObject>();
 
     public List<GameObject> GetRails()
     {
