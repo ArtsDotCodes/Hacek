@@ -28,7 +28,7 @@ public class RailHandler : MonoBehaviour {
         }
         else
         {
-            //smooth out rotations
+            //smooth out rotations somewhat
             Quaternion current = transform.rotation, target;
             transform.LookAt(destinations[destinationIndex]);
             target = transform.rotation;
