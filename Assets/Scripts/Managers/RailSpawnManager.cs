@@ -14,7 +14,7 @@ public class RailSpawnManager : MonoBehaviour {
         {
             if(GameManager.railData[i, 0, 0] != null)
             {
-                Vector3 pos = RandomCircle(center, 50.0f);
+                Vector3 pos = RandomCircle(center, 50.0f, i);
                 Quaternion rot = Quaternion.FromToRotation(Vector3.forward, center - pos);
                 RailHandler rh = ((GameObject)Instantiate(railMakerPrefab, pos, rot)).GetComponent<RailHandler>();
                 rh.SetRailIndex(i);
@@ -22,9 +22,9 @@ public class RailSpawnManager : MonoBehaviour {
         }
     }
 
-    private Vector3 RandomCircle(Vector3 center, float radius)
+    private Vector3 RandomCircle(Vector3 center, float radius, int index)
     {
-        float ang = Random.value * 360;
+        float ang = index/1062.0f * 360.0f;
         Vector3 pos;
         pos.x = center.x + radius * Mathf.Sin(ang * Mathf.Deg2Rad);
         pos.y = center.y;

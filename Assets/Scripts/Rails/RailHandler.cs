@@ -3,26 +3,49 @@ using System.Collections;
 
 public class RailHandler : MonoBehaviour {
 
+    [SerializeField]
+    private float rotationSpeed = 10.0f;
+
     private int railIndex;
+    private float startDelay;
     private float speed = 10.0f;
     private float[] durations = new float[5];
     private Vector3[] destinations = new Vector3[5];
+    private GameObject waypointMarker;
 
     private int destinationIndex;
 
+    void Awake()
+    {
+        waypointMarker = (GameObject)Resources.Load(ResourcePaths.WaypointMarkerPrefabPath);
+    }
+
     void FixedUpdate()
     {
-        transform.LookAt(destinations[destinationIndex]);
-        Vector3 nextMove = transform.position + (transform.forward * Time.fixedDeltaTime * speed);
-        if (Vector3.Distance(transform.position, destinations[destinationIndex]) < Vector3.Distance(nextMove, destinations[destinationIndex]))
+        if(startDelay > 0.0f)
         {
-            transform.position = destinations[destinationIndex];
-            if (++destinationIndex >= destinations.Length || durations[destinationIndex] == 0.0f)
-                Destroy(gameObject);
+            startDelay -= Time.fixedDeltaTime * GameManager.timeScaleFactor;
         }
         else
         {
-            transform.position = nextMove;
+            //smooth out rotations
+            Quaternion current = transform.rotation, target;
+            transform.LookAt(destinations[destinationIndex]);
+            target = transform.rotation;
+            transform.rotation = Quaternion.Lerp(current, target, rotationSpeed * Time.fixedDeltaTime);
+
+            Vector3 nextMove = transform.position + (transform.forward * Time.fixedDeltaTime * speed);
+            if (Vector3.Distance(transform.position, destinations[destinationIndex]) < Vector3.Distance(nextMove, destinations[destinationIndex])
+                && Vector3.Distance(transform.position, destinations[destinationIndex]) < 3.0f)
+            {
+                transform.position = destinations[destinationIndex];
+                if (++destinationIndex >= destinations.Length || durations[destinationIndex] == 0.0f)
+                    Destroy(gameObject);
+            }
+            else
+            {
+                transform.position = nextMove;
+            }
         }
     }
 
@@ -46,6 +69,8 @@ public class RailHandler : MonoBehaviour {
             }
         }
 
+        startDelay = GameManager.startTimes[railIndex];
+
         SetDestinations();
     }
 
@@ -54,7 +79,13 @@ public class RailHandler : MonoBehaviour {
         for(int i=0; i<5; i++)
         {
             destinations[i] = transform.position + (transform.forward * i * 10);
-            destinations[i].y = durations[i]/10.0f;
+            if (durations[i] < 30.0f)
+                destinations[i].y = durations[i];
+            else if (durations[i] < 130.0f)
+                destinations[i].y = durations[i] / 6.0f;
+            else if (durations[i] < 250.0f)
+                destinations[i].y = durations[i] / 20.0f;
+            Instantiate(waypointMarker, destinations[i], transform.rotation);
         }
     }
 }
