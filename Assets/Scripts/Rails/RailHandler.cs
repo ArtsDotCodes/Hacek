@@ -40,7 +40,8 @@ public class RailHandler : MonoBehaviour {
             {
                 transform.position = destinations[destinationIndex];
                 if (++destinationIndex >= destinations.Length || durations[destinationIndex] == 0.0f)
-                    Destroy(gameObject);
+                    startDelay = 99999.9f;
+                        //Destroy(gameObject);
             }
             else
             {
@@ -60,13 +61,9 @@ public class RailHandler : MonoBehaviour {
         for(int i=0; i<GameManager.railData.GetLength(1); i++)
         {
             if(GameManager.railData[railIndex, i, 0] == null)
-            {
                 break;
-            }
             else
-            {
                 durations[int.Parse(GameManager.railData[railIndex, i, 3])] += float.Parse(GameManager.railData[railIndex, i, 2]);
-            }
         }
 
         startDelay = GameManager.startTimes[railIndex];
@@ -85,7 +82,7 @@ public class RailHandler : MonoBehaviour {
                 destinations[i].y = durations[i] / 6.0f;
             else if (durations[i] < 250.0f)
                 destinations[i].y = durations[i] / 20.0f;
-            Instantiate(waypointMarker, destinations[i], transform.rotation);
+            //Instantiate(waypointMarker, destinations[i], transform.rotation);
         }
     }
 }
