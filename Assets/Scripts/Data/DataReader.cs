@@ -20,11 +20,14 @@ public class DataReader : MonoBehaviour {
         lines = data.ToString().Split('\n');
 
         //Parse the data file and store all info into an array
+
+        int k = 0;
         foreach (string line in lines)
         {
             string[] splitLine = line.Split(',');
             if (railData[int.Parse(splitLine[0]), 0, 0] == null)
             {
+                k = 0;
                 for (int i = 0; i < splitLine.Length; i++)
                 {
                     railData[int.Parse(splitLine[0]), 0, i] = splitLine[i];
@@ -32,16 +35,10 @@ public class DataReader : MonoBehaviour {
             }
             else if (railData[int.Parse(splitLine[0]), 0, 0] == splitLine[0])
             {
-                //inefficient...
-                int i = 1;
-                while (railData[int.Parse(splitLine[0]), i, 0] != null)
-                {
-                    ++i;
-                }
-
+                ++k;
                 for (int j = 0; j < splitLine.Length; j++)
                 {
-                    railData[int.Parse(splitLine[0]), i, j] = splitLine[j];
+                    railData[int.Parse(splitLine[0]), k, j] = splitLine[j];
                 }
             }
         }
