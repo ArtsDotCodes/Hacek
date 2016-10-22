@@ -11,6 +11,7 @@ public class ResourcePaths {
     ////////
     private static readonly string DataPath = "Data/";
     public static readonly string FormattedDataPath = DataPath + "formattedData";
+    public static readonly string SortedDataPath = DataPath + "sortedData";
     public static readonly string T0DataPath = DataPath + "T0Data";
 
     ///////////

@@ -62,7 +62,7 @@ public class RailHandler : MonoBehaviour {
             if(GameManager.railData[railIndex, i, 0] == null)
                 break;
             else
-                durations[int.Parse(GameManager.railData[railIndex, i, 3])] += float.Parse(GameManager.railData[railIndex, i, 2]);
+                durations[int.Parse(GameManager.railData[railIndex, i, 2])] += float.Parse(GameManager.railData[railIndex, i, 1]);
         }
 
         startDelay = GameManager.startTimes[railIndex];
