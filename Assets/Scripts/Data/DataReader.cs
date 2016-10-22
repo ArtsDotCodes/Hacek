@@ -6,9 +6,9 @@ public class DataReader : MonoBehaviour {
     private TextAsset data;
     private string[] lines;
     private string[,,] railData = new string[1057,5,4]; //size is hard-coded due to time limitations
-    private float[] startTimes = new float[1057];
+    private float[] startTimes = new float[1069];
 
-    void OldStart()
+    void Start()
     {
         /////////////
         //RAIL DATA//
@@ -49,9 +49,23 @@ public class DataReader : MonoBehaviour {
         ///////////////
         //START TIMES//
         ///////////////
-        for (int i=0; i<startTimes.Length; i++)
+        /*for (int i=0; i<startTimes.Length; i++)
         {
             startTimes[i] = float.Parse(railData[i, 0, 3]);
+        }*/
+
+        //Load the data file
+        data = (TextAsset)Resources.Load(ResourcePaths.T0DataPath);
+
+        //Separate all the lines by the newline character
+        lines = data.ToString().Split('\n');
+
+        //Parse the data file and store all info into an array
+        foreach (string line in lines)
+        {
+            string[] splitLine = line.Split(',');
+            if (startTimes[int.Parse(splitLine[0])] == 0.0f)
+                startTimes[int.Parse(splitLine[0])] = float.Parse(splitLine[1].Split(';')[0]);
         }
 
         //Pass all the data to the Game Manager
@@ -59,7 +73,7 @@ public class DataReader : MonoBehaviour {
     }
 
     //uses old data format, held in case of emergency
-    void Start()
+    void OldStart()
     {
         /*
         private TextAsset data;
@@ -108,7 +122,7 @@ public class DataReader : MonoBehaviour {
         //START TIMES//
         ///////////////
         //Load the data file
-        data = (TextAsset)Resources.Load(ResourcePaths.FormattedDataPath);
+        data = (TextAsset)Resources.Load(ResourcePaths.T0DataPath);
 
         //Separate all the lines by the newline character
         lines = data.ToString().Split('\n');
