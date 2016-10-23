@@ -40,7 +40,8 @@ public class RailHandler : MonoBehaviour {
             {
                 transform.position = destinations[destinationIndex];
                 if (++destinationIndex >= destinations.Length || durations[destinationIndex] == 0.0f)
-                    Destroy(gameObject);
+                    startDelay = 9999999.9f;
+                    //Destroy(gameObject);
             }
             else
             {
@@ -74,7 +75,7 @@ public class RailHandler : MonoBehaviour {
     {
         for(int i=0; i<5; i++)
         {
-            destinations[i] = transform.position + (transform.forward * (i+1) * 10);
+            destinations[i] = transform.position + (transform.forward * (i+1) * (GameManager.radiusFromCenter/5.0f));
             if (i != 4)
             {
                 if (durations[i] < 30.0f)
@@ -89,7 +90,8 @@ public class RailHandler : MonoBehaviour {
                 destinations[i].y = 0.0f;
             }
             
-            Instantiate(waypointMarker, destinations[i], transform.rotation);
+            GameObject waypoint = (GameObject)Instantiate(waypointMarker, destinations[i], transform.rotation);
+            waypoint.transform.parent = GameObject.Find("Waypoints").transform;
         }
     }
 }
