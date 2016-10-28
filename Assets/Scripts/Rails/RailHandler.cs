@@ -6,6 +6,7 @@ public class RailHandler : MonoBehaviour {
     [SerializeField]
     private float rotationSpeed = 10.0f;
 
+    private bool markedForDeletion;
     private int railIndex;
     private float startDelay;
     private float speed = 10.0f;
@@ -28,25 +29,39 @@ public class RailHandler : MonoBehaviour {
         }
         else
         {
-            //smooth out rotations somewhat
-            Quaternion current = transform.rotation, target;
-            transform.LookAt(destinations[destinationIndex]);
-            target = transform.rotation;
-            transform.rotation = Quaternion.Lerp(current, target, rotationSpeed * Time.fixedDeltaTime);
+            if (!markedForDeletion)
+            {
+                //smooth out rotations somewhat
+                Quaternion current = transform.rotation, target;
+                transform.LookAt(destinations[destinationIndex]);
+                target = transform.rotation;
+                transform.rotation = Quaternion.Lerp(current, target, rotationSpeed * Time.fixedDeltaTime);
 
-            Vector3 nextMove = transform.position + (transform.forward * Time.fixedDeltaTime * speed);
-            if (Vector3.Distance(transform.position, destinations[destinationIndex]) < Vector3.Distance(nextMove, destinations[destinationIndex])
-                && Vector3.Distance(transform.position, destinations[destinationIndex]) < 3.0f)
-            {
-                transform.position = destinations[destinationIndex];
-                if (++destinationIndex >= destinations.Length || durations[destinationIndex] == 0.0f)
-                    startDelay = 9999999.9f;
-                    //Destroy(gameObject);
-            }
-            else
-            {
-                transform.position = nextMove;
-            }
+                Vector3 nextMove = transform.position + (transform.forward * Time.fixedDeltaTime * speed);
+                if (Vector3.Distance(transform.position, destinations[destinationIndex]) < Vector3.Distance(nextMove, destinations[destinationIndex])
+                    && Vector3.Distance(transform.position, destinations[destinationIndex]) < 3.0f)
+                {
+                    transform.position = destinations[destinationIndex];
+                    if (++destinationIndex >= destinations.Length || durations[destinationIndex] == 0.0f)
+                    {
+                        if (GameManager.debugMode)
+                        {
+                            startDelay = 9999999.9f;
+                        }    
+                        else
+                        {
+                            GetComponent<DestroyByTrailTime>().markForDeletion();
+                            GetComponent<Rotator>().setSpeed(10.0f);
+                            GetComponent<Rotator>().setAcceleration(100.0f);
+                            markedForDeletion = true;
+                        }
+                    }
+                }
+                else
+                {
+                    transform.position = nextMove;
+                }
+            } 
         }
     }
 
@@ -89,9 +104,12 @@ public class RailHandler : MonoBehaviour {
             {
                 destinations[i].y = 0.0f;
             }
-            
-            GameObject waypoint = (GameObject)Instantiate(waypointMarker, destinations[i], transform.rotation);
-            waypoint.transform.parent = GameObject.Find("Waypoints").transform;
+
+            if (GameManager.debugMode)
+            {
+                GameObject waypoint = (GameObject)Instantiate(waypointMarker, destinations[i], transform.rotation);
+                waypoint.transform.parent = GameObject.Find("Waypoints").transform;
+            }
         }
     }
 }

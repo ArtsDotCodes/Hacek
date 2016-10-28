@@ -3,6 +3,8 @@ using System.Collections;
 
 public class GameManager : MonoBehaviour {
 
+    public static readonly bool debugMode = false;
+
     public static string[,,] railData;
     public static float[] startTimes;
     public static float timeScaleFactor = 1000.0f;
