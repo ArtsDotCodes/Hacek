@@ -9,7 +9,7 @@ public class RailHandler : MonoBehaviour {
     private bool markedForDeletion;
     private int railIndex;
     private float startDelay;
-    private float slopeFactor, origslope;
+    private float slopeFactor;
     private float speed = 10.0f;
     private float[] durations = new float[5];
     private Vector3[] destinations = new Vector3[5];
@@ -39,7 +39,7 @@ public class RailHandler : MonoBehaviour {
                 //target = transform.rotation;
                 //transform.rotation = Quaternion.Lerp(current, target, rotationSpeed * Time.fixedDeltaTime);
 
-                Vector3 nextMove = transform.position + ((transform.forward * Time.fixedDeltaTime * speed)) * (1.0f/slopeFactor);
+                Vector3 nextMove = transform.position + ((transform.forward * Time.fixedDeltaTime * speed)) / (slopeFactor * 2.0f);
                 if (Vector3.Distance(transform.position, destinations[destinationIndex]) < Vector3.Distance(nextMove, destinations[destinationIndex])
                     && Vector3.Distance(transform.position, destinations[destinationIndex]) < 3.0f)
                 {
@@ -61,7 +61,7 @@ public class RailHandler : MonoBehaviour {
                     else
                     {
                         slopeFactor = destinations[destinationIndex].y - destinations[destinationIndex-1].y;
-                        origslope = slopeFactor;
+
                         if (slopeFactor <= 1.0f)
                             slopeFactor = 2.0f;
                     }
