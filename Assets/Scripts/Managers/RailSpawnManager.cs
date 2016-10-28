@@ -1,9 +1,10 @@
 ﻿using UnityEngine;
-using System.Collections;
+using System.Collections.Generic;
 
 public class RailSpawnManager : MonoBehaviour {
 
     private GameObject railMakerPrefab;
+    private LinkedList<GameObject> railList = new LinkedList<GameObject>();
 
     public void BeginSpawning()
     {
@@ -18,8 +19,12 @@ public class RailSpawnManager : MonoBehaviour {
                 Quaternion rot = Quaternion.FromToRotation(Vector3.forward, center - pos);
                 RailHandler rh = ((GameObject)Instantiate(railMakerPrefab, pos, rot)).GetComponent<RailHandler>();
                 rh.SetRailIndex(i);
+                railList.AddLast(rh.gameObject);
             }
         }
+
+        GameManager.SetRailList(railList);
+        FindObjectOfType<PlayerManager>().SetCurrentRail(711);
     }
 
     private Vector3 DistributeCircle(Vector3 center, float radius, int index)

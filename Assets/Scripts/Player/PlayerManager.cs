@@ -6,13 +6,12 @@ public class PlayerManager : MonoBehaviour {
     [SerializeField] private float lerpSpeed;
 
     private GameObject currentRail;
-    private PlayerHitboxHandler leftHitbox, rightHitbox;
+    private Camera cam;
     private static bool left, right;
 
-    void Start () {
-        currentRail = FindObjectOfType<RailHandler>().gameObject;
-        leftHitbox = GameObject.Find("LeftHitbox").GetComponent<PlayerHitboxHandler>();
-        rightHitbox = GameObject.Find("RightHitbox").GetComponent<PlayerHitboxHandler>();
+    void Start()
+    {
+        cam = GetComponent<Camera>();
     }
 
 	void Update () {
@@ -24,10 +23,34 @@ public class PlayerManager : MonoBehaviour {
 
     void FixedUpdate()
     {
-        transform.position = Vector3.Lerp(transform.position, currentRail.transform.position + Vector3.up, Time.fixedDeltaTime * lerpSpeed);
+        Vector3 oldPosition = transform.position;
+        Vector3 newPosition = Vector3.Lerp(transform.position, currentRail.transform.position + Vector3.up, Time.fixedDeltaTime * lerpSpeed);
+        transform.LookAt(newPosition);
+        transform.position = newPosition;
     }
 
     private void HandleRailSwitch()
+    {        
+        if (left)
+        {
+            if (GameManager.GetRailList().Find(currentRail).Next != null)
+                currentRail = GameManager.GetRailList().Find(currentRail).Next.Value;
+            else
+                currentRail = GameManager.GetRailList().First.Value;
+        }
+            
+        else if (right)
+        {
+            if (GameManager.GetRailList().Find(currentRail).Previous != null)
+                currentRail = GameManager.GetRailList().Find(currentRail).Previous.Value;
+            else
+                currentRail = GameManager.GetRailList().Last.Value;
+        }
+           
+    }
+
+    /*
+    private void HandleRailSwitchOld()
     {
         if (left)
         {
@@ -63,6 +86,18 @@ public class PlayerManager : MonoBehaviour {
             if (nextRail != null)
                 currentRail = nextRail;
         }
+    }
+    */
+
+    public void SetCurrentRail(int index)
+    {
+        LinkedListNode<GameObject> list = GameManager.GetRailList().First;
+        for(int i=0; i<index; i++)
+        {
+            list = list.Next;
+        }
+
+        currentRail = list.Value;
     }
 
     public static void SetLeft()

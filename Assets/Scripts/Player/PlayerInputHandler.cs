@@ -4,11 +4,11 @@ using System.Collections;
 public class PlayerInputHandler : MonoBehaviour {
 	
 	void Update () {
-        if (Input.GetKeyDown(KeyCode.LeftArrow) || Input.GetKeyDown(KeyCode.A))
+        if (Input.GetKey(KeyCode.LeftArrow) || Input.GetKey(KeyCode.A))
         {
             PlayerManager.SetLeft();
         }
-        else if (Input.GetKeyDown(KeyCode.RightArrow) || Input.GetKeyDown(KeyCode.D))
+        else if (Input.GetKey(KeyCode.RightArrow) || Input.GetKey(KeyCode.D))
         {
             PlayerManager.SetRight();
         }

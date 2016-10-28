@@ -1,10 +1,11 @@
 ﻿using UnityEngine;
-using System.Collections;
+using System.Collections.Generic;
 
 public class GameManager : MonoBehaviour {
 
     public static readonly bool debugMode = false;
 
+    public static LinkedList<GameObject> railList;
     public static string[,,] railData;
     public static float[] startTimes;
     public static float timeScaleFactor = 1000.0f;
@@ -19,5 +20,15 @@ public class GameManager : MonoBehaviour {
     {
         GameManager.startTimes = startTimes;
         FindObjectOfType<RailSpawnManager>().BeginSpawning();
+    }
+
+    public static LinkedList<GameObject> GetRailList()
+    {
+        return railList;
+    }
+
+    public static void SetRailList(LinkedList<GameObject> railList)
+    {
+        GameManager.railList = railList;
     }
 }

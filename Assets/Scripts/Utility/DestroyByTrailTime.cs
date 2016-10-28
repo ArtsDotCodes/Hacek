@@ -16,7 +16,10 @@ public class DestroyByTrailTime : MonoBehaviour {
         {
             timeToDelete -= Time.deltaTime;
             if (timeToDelete <= 0.0f)
+            {
+                GameManager.GetRailList().Remove(gameObject);
                 Destroy(gameObject);
+            }    
         }
 	}
 
