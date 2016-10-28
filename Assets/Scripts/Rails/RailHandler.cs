@@ -9,6 +9,7 @@ public class RailHandler : MonoBehaviour {
     private bool markedForDeletion;
     private int railIndex;
     private float startDelay;
+    private float slopeFactor, origslope;
     private float speed = 10.0f;
     private float[] durations = new float[5];
     private Vector3[] destinations = new Vector3[5];
@@ -19,6 +20,7 @@ public class RailHandler : MonoBehaviour {
     void Awake()
     {
         waypointMarker = (GameObject)Resources.Load(ResourcePaths.WaypointMarkerPrefabPath);
+        slopeFactor = 1.0f;
     }
 
     void FixedUpdate()
@@ -32,12 +34,12 @@ public class RailHandler : MonoBehaviour {
             if (!markedForDeletion)
             {
                 //smooth out rotations somewhat
-                Quaternion current = transform.rotation, target;
+                //Quaternion current = transform.rotation, target;
                 transform.LookAt(destinations[destinationIndex]);
-                target = transform.rotation;
-                transform.rotation = Quaternion.Lerp(current, target, rotationSpeed * Time.fixedDeltaTime);
+                //target = transform.rotation;
+                //transform.rotation = Quaternion.Lerp(current, target, rotationSpeed * Time.fixedDeltaTime);
 
-                Vector3 nextMove = transform.position + (transform.forward * Time.fixedDeltaTime * speed);
+                Vector3 nextMove = transform.position + ((transform.forward * Time.fixedDeltaTime * speed)) * (1.0f/slopeFactor);
                 if (Vector3.Distance(transform.position, destinations[destinationIndex]) < Vector3.Distance(nextMove, destinations[destinationIndex])
                     && Vector3.Distance(transform.position, destinations[destinationIndex]) < 3.0f)
                 {
@@ -55,6 +57,13 @@ public class RailHandler : MonoBehaviour {
                             GetComponent<Rotator>().setAcceleration(100.0f);
                             markedForDeletion = true;
                         }
+                    }
+                    else
+                    {
+                        slopeFactor = destinations[destinationIndex].y - destinations[destinationIndex-1].y;
+                        origslope = slopeFactor;
+                        if (slopeFactor <= 1.0f)
+                            slopeFactor = 2.0f;
                     }
                 }
                 else
