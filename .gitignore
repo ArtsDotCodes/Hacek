@@ -33,3 +33,4 @@ ehthumbs.db
 Thumbs.db
 
 Assets/Resources/Prefabs/Entities/Environment/Enemies.meta
+*.stackdump
