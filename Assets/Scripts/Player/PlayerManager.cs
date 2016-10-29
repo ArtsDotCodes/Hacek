@@ -6,12 +6,12 @@ public class PlayerManager : MonoBehaviour {
     [SerializeField] private float lerpSpeed;
 
     private GameObject currentRail;
-    private Camera cam;
+    private GameObject cam;
     private static bool left, right;
 
     void Start()
     {
-        cam = GetComponent<Camera>();
+        cam = GameObject.Find("VR Camera Holder");
     }
 
 	void Update () {
@@ -23,10 +23,33 @@ public class PlayerManager : MonoBehaviour {
 
     void FixedUpdate()
     {
-        Vector3 oldPosition = transform.position;
-        Vector3 newPosition = Vector3.Lerp(transform.position, currentRail.transform.position + Vector3.up, Time.fixedDeltaTime * lerpSpeed);
-        transform.LookAt(newPosition);
-        transform.position = newPosition;
+        if(currentRail != null)
+        {
+            Vector3 oldPosition = transform.position;
+            Vector3 newPosition = Vector3.Lerp(transform.position, currentRail.transform.position + Vector3.up, Time.fixedDeltaTime * lerpSpeed);
+            transform.LookAt(newPosition);
+            transform.position = newPosition;
+            cam.transform.position = newPosition + Vector3.up;
+        }
+        else
+        {
+            LinkedListNode<GameObject> node = GameManager.GetRailList().First;
+            GameObject closestRail = null;
+            while(node != null)
+            {
+                if (closestRail == null)
+                {
+                    closestRail = node.Value;
+                }
+                else
+                {
+                    if (Vector3.Distance(transform.position, node.Value.transform.position) < Vector3.Distance(transform.position, closestRail.transform.position))
+                        closestRail = node.Value;
+                }
+                node = node.Next;
+            }
+            currentRail = closestRail;
+        }
     }
 
     private void HandleRailSwitch()

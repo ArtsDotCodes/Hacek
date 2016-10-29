@@ -114,6 +114,8 @@ public class RailHandler : MonoBehaviour {
                 destinations[i].y = 0.0f;
             }
 
+            ++destinations[i].y;
+
             if (GameManager.debugMode)
             {
                 GameObject waypoint = (GameObject)Instantiate(waypointMarker, destinations[i], transform.rotation);
