@@ -10,14 +10,34 @@ public class PlayerManager : MonoBehaviour {
     private static bool reachedEnd;
     private static bool left, right;
 
+    
+    //audio stuff
+    [SerializeField] private AudioClip[] railSounds;
+    private AudioSource source;
+    private AudioClip currentRailSound;
+    private float railSoundTimer;
+    private int railSoundIndex;
+
     void Start()
     {
         cam = GameObject.Find("VR Camera Holder");
+
+        source = GetComponent<AudioSource>();
+        currentRailSound = railSounds[0];
+        railSoundIndex = 0;
+
+        source.loop = true;
+        source.clip = currentRailSound;
+        source.Play();
     }
 
 	void Update () {
         if (left || right)
             HandleRailSwitch();
+
+        railSoundTimer += Time.deltaTime;
+        if (railSoundTimer > currentRailSound.length)
+            railSoundTimer -= currentRailSound.length;
 
         SetAllFlagsFalse();
 	}
@@ -67,6 +87,11 @@ public class PlayerManager : MonoBehaviour {
                 currentRail = GameManager.GetRailList().Find(currentRail).Next.Value;
             else
                 currentRail = GameManager.GetRailList().First.Value;
+
+            if (railSoundIndex == railSounds.Length - 1)
+                railSoundIndex = 0;
+            else
+                ++railSoundIndex;
         }
             
         else if (right)
@@ -75,9 +100,21 @@ public class PlayerManager : MonoBehaviour {
                 currentRail = GameManager.GetRailList().Find(currentRail).Previous.Value;
             else
                 currentRail = GameManager.GetRailList().Last.Value;
+
+            if (railSoundIndex == 0)
+                railSoundIndex = railSounds.Length-1;
+            else
+                --railSoundIndex;
         }
 
         currentRail.GetComponent<RailHandler>().SetIsPlayerRail(true);
+
+        currentRailSound = railSounds[railSoundIndex];
+        source.clip = currentRailSound;
+        if (railSoundTimer > currentRailSound.length)
+            railSoundTimer -= currentRailSound.length;
+        source.Play();
+        source.time = railSoundTimer;
     }
 
     public void SetCurrentRail(int index)
