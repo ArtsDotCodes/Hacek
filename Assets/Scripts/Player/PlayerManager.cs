@@ -28,7 +28,6 @@ public class PlayerManager : MonoBehaviour {
         {
             if (currentRail != null)
             {
-                Vector3 oldPosition = transform.position;
                 Vector3 newPosition = Vector3.Lerp(transform.position, currentRail.transform.position + Vector3.up, Time.fixedDeltaTime * lerpSpeed);
                 transform.LookAt(newPosition);
                 transform.position = newPosition;

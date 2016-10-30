@@ -3,9 +3,6 @@ using System.Collections;
 
 public class RailHandler : MonoBehaviour {
 
-    [SerializeField]
-    private float rotationSpeed = 10.0f;
-
     private bool markedForDeletion;
     private bool isPlayerRail;
     private int railIndex;

@@ -8,7 +8,7 @@ public class GameManager : MonoBehaviour {
     public static LinkedList<GameObject> railList;
     public static string[,,] railData;
     public static float[] startTimes;
-    public static float timeScaleFactor = 5000.0f;
+    public static float timeScaleFactor = 50.0f;
     public static float radiusFromCenter = 100.0f;
 
     public static void SetRailData(string[,,] railData)
