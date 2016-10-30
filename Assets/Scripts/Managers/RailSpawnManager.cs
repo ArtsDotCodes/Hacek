@@ -3,12 +3,13 @@ using System.Collections.Generic;
 
 public class RailSpawnManager : MonoBehaviour {
 
-    private GameObject railMakerPrefab;
+    private GameObject railMakerPrefab, railContainer;
     private LinkedList<GameObject> railList = new LinkedList<GameObject>();
 
     public void BeginSpawning()
     {
         railMakerPrefab = (GameObject)Resources.Load(ResourcePaths.TrailMakerPrefabPath);
+        railContainer = GameObject.Find("Rails");
 
         Vector3 center = transform.position;
         for (int i = 165; i < GameManager.railData.GetLength(0)-165; i++)
@@ -19,6 +20,7 @@ public class RailSpawnManager : MonoBehaviour {
                 Quaternion rot = Quaternion.FromToRotation(Vector3.forward, center - pos);
                 RailHandler rh = ((GameObject)Instantiate(railMakerPrefab, pos, rot)).GetComponent<RailHandler>();
                 rh.SetRailIndex(i);
+                rh.transform.parent = railContainer.transform;
                 railList.AddLast(rh.gameObject);
             }
         }
