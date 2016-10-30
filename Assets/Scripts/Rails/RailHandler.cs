@@ -7,6 +7,7 @@ public class RailHandler : MonoBehaviour {
     private float rotationSpeed = 10.0f;
 
     private bool markedForDeletion;
+    private bool isPlayerRail;
     private int railIndex;
     private float startDelay;
     private float slopeFactor;
@@ -52,6 +53,10 @@ public class RailHandler : MonoBehaviour {
                         }    
                         else
                         {
+                            if(destinationIndex == destinations.Length && isPlayerRail)
+                            {
+                                PlayerManager.SetReachedEnd(true);
+                            }
                             GetComponent<DestroyByTrailTime>().markForDeletion();
                             GetComponent<Rotator>().setSpeed(10.0f);
                             GetComponent<Rotator>().setAcceleration(100.0f);
@@ -122,5 +127,15 @@ public class RailHandler : MonoBehaviour {
                 waypoint.transform.parent = GameObject.Find("Waypoints").transform;
             }
         }
+    }
+
+    public void SetIsPlayerRail(bool isPlayerRail)
+    {
+        this.isPlayerRail = isPlayerRail;
+    }
+
+    public bool IsPlayerRail()
+    {
+        return isPlayerRail;
     }
 }

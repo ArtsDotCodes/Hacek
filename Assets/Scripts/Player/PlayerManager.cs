@@ -7,6 +7,7 @@ public class PlayerManager : MonoBehaviour {
 
     private GameObject currentRail;
     private GameObject cam;
+    private static bool reachedEnd;
     private static bool left, right;
 
     void Start()
@@ -23,37 +24,44 @@ public class PlayerManager : MonoBehaviour {
 
     void FixedUpdate()
     {
-        if(currentRail != null)
+        if (!reachedEnd)
         {
-            Vector3 oldPosition = transform.position;
-            Vector3 newPosition = Vector3.Lerp(transform.position, currentRail.transform.position + Vector3.up, Time.fixedDeltaTime * lerpSpeed);
-            transform.LookAt(newPosition);
-            transform.position = newPosition;
-            cam.transform.position = newPosition + Vector3.up;
-        }
-        else
-        {
-            LinkedListNode<GameObject> node = GameManager.GetRailList().First;
-            GameObject closestRail = null;
-            while(node != null)
+            if (currentRail != null)
             {
-                if (closestRail == null)
-                {
-                    closestRail = node.Value;
-                }
-                else
-                {
-                    if (Vector3.Distance(transform.position, node.Value.transform.position) < Vector3.Distance(transform.position, closestRail.transform.position))
-                        closestRail = node.Value;
-                }
-                node = node.Next;
+                Vector3 oldPosition = transform.position;
+                Vector3 newPosition = Vector3.Lerp(transform.position, currentRail.transform.position + Vector3.up, Time.fixedDeltaTime * lerpSpeed);
+                transform.LookAt(newPosition);
+                transform.position = newPosition;
+                cam.transform.position = newPosition + Vector3.up;
             }
-            currentRail = closestRail;
+            else
+            {
+                LinkedListNode<GameObject> node = GameManager.GetRailList().First;
+                GameObject closestRail = null;
+                while (node != null)
+                {
+                    if (closestRail == null)
+                    {
+                        closestRail = node.Value;
+                    }
+                    else
+                    {
+                        if (Vector3.Distance(transform.position, node.Value.transform.position) < Vector3.Distance(transform.position, closestRail.transform.position))
+                            closestRail = node.Value;
+                    }
+                    node = node.Next;
+                }
+                currentRail.GetComponent<RailHandler>().SetIsPlayerRail(false);
+                currentRail = closestRail;
+                currentRail.GetComponent<RailHandler>().SetIsPlayerRail(true);
+            }
         }
     }
 
     private void HandleRailSwitch()
-    {        
+    {
+        currentRail.GetComponent<RailHandler>().SetIsPlayerRail(false);
+
         if (left)
         {
             if (GameManager.GetRailList().Find(currentRail).Next != null)
@@ -69,48 +77,9 @@ public class PlayerManager : MonoBehaviour {
             else
                 currentRail = GameManager.GetRailList().Last.Value;
         }
-           
-    }
 
-    /*
-    private void HandleRailSwitchOld()
-    {
-        if (left)
-        {
-            List<GameObject> rails = leftHitbox.GetRails();
-            GameObject nextRail = null;
-            foreach (GameObject o in rails)
-            {
-                if(o != currentRail)
-                {
-                    if (nextRail == null)
-                        nextRail = o;
-                    else if (Vector3.Distance(transform.position, o.transform.position) < Vector3.Distance(transform.position, nextRail.transform.position))
-                        nextRail = o;
-                }   
-            }
-            if (nextRail != null)
-                currentRail = nextRail;
-        }
-        else if (right)
-        {
-            List<GameObject> rails = rightHitbox.GetRails();
-            GameObject nextRail = null;
-            foreach (GameObject o in rails)
-            {
-                if (o != currentRail)
-                {
-                    if (nextRail == null)
-                        nextRail = o;
-                    else if (Vector3.Distance(transform.position, o.transform.position) < Vector3.Distance(transform.position, nextRail.transform.position))
-                        nextRail = o;
-                }
-            }
-            if (nextRail != null)
-                currentRail = nextRail;
-        }
+        currentRail.GetComponent<RailHandler>().SetIsPlayerRail(true);
     }
-    */
 
     public void SetCurrentRail(int index)
     {
@@ -121,6 +90,7 @@ public class PlayerManager : MonoBehaviour {
         }
 
         currentRail = list.Value;
+        currentRail.GetComponent<RailHandler>().SetIsPlayerRail(true);
     }
 
     public static void SetLeft()
@@ -137,5 +107,10 @@ public class PlayerManager : MonoBehaviour {
     {
         left = false;
         right = false;
+    }
+
+    public static void SetReachedEnd(bool reachedEnd)
+    {
+        PlayerManager.reachedEnd = reachedEnd;
     }
 }
