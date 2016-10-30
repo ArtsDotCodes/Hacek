@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using System.Collections;
+using UnityEngine.SceneManagement;
 
 public class PlayerInputHandler : MonoBehaviour {
 
@@ -23,6 +24,11 @@ public class PlayerInputHandler : MonoBehaviour {
             {
                 PlayerManager.SetRight();
             }
+        }
+
+        if (Input.GetKeyDown(KeyCode.R))
+        {
+            SceneManager.LoadScene(0);
         }
 	}
 
