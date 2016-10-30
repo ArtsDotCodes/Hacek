@@ -9,14 +9,20 @@ public class PlayerManager : MonoBehaviour {
     private GameObject cam;
     private static bool reachedEnd;
     private static bool left, right;
-
     
     //audio stuff
     [SerializeField] private AudioClip[] railSounds;
-    private AudioSource source;
+    [SerializeField] private AudioClip[] sparseSounds;
+    [SerializeField] private AudioClip[] mediumSounds;
+    [SerializeField] private AudioClip[] denseSounds;
+    private AudioSource source, source2; //lol source 2
     private AudioClip currentRailSound;
     private float railSoundTimer;
+    private float mediumThreshold, denseThreshold;
     private int railSoundIndex;
+
+    private enum SoundState {sparse, medium, dense};
+    private SoundState soundState;
 
     void Start()
     {
@@ -29,18 +35,70 @@ public class PlayerManager : MonoBehaviour {
         source.loop = true;
         source.clip = currentRailSound;
         source.Play();
+
+        source2 = gameObject.AddComponent<AudioSource>();
+        source2.loop = false;
+        mediumThreshold = 5.0f;
+        denseThreshold = 15.0f;
+        soundState = SoundState.sparse;
     }
 
-	void Update () {
+	void Update ()
+    {
         if (left || right)
             HandleRailSwitch();
 
+        HandleAudio();
+
+        SetAllFlagsFalse();
+	}
+
+    private void HandleAudio()
+    {
+        //Rail sounds
         railSoundTimer += Time.deltaTime;
         if (railSoundTimer > currentRailSound.length)
             railSoundTimer -= currentRailSound.length;
 
-        SetAllFlagsFalse();
-	}
+        //Ambient mountain sounds
+        if (!source2.isPlaying)
+        {
+            if(soundState == SoundState.dense)
+            {
+                source2.clip = denseSounds[Random.Range(0, denseSounds.Length)];
+                source2.Play();
+            }
+            else if(soundState == SoundState.medium)
+            {
+                source2.clip = mediumSounds[Random.Range(0, mediumSounds.Length)];
+                source2.Play();
+            }
+            else
+            {
+                source2.clip = sparseSounds[Random.Range(0, sparseSounds.Length)];
+                source2.Play();
+            }
+        }
+
+        if(transform.position.y >= denseThreshold && soundState != SoundState.dense)
+        {
+            soundState = SoundState.dense;
+            source2.clip = denseSounds[Random.Range(0, denseSounds.Length)];
+            source2.Play();
+        }
+        else if(transform.position.y >= mediumThreshold && transform.position.y < denseThreshold && soundState != SoundState.medium)
+        {
+            soundState = SoundState.medium;
+            source2.clip = mediumSounds[Random.Range(0, mediumSounds.Length)];
+            source2.Play();
+        }
+        else if(transform.position.y < mediumThreshold && soundState != SoundState.sparse)
+        {
+            soundState = SoundState.sparse;
+            source2.clip = sparseSounds[Random.Range(0, sparseSounds.Length)];
+            source2.Play();
+        }
+    }
 
     void FixedUpdate()
     {
