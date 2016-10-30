@@ -26,7 +26,7 @@ public class RailSpawnManager : MonoBehaviour {
         }
 
         GameManager.SetRailList(railList);
-        FindObjectOfType<PlayerManager>().SetCurrentRail(711);
+        FindObjectOfType<PlayerManager>().SetCurrentRail(550);
     }
 
     private Vector3 DistributeCircle(Vector3 center, float radius, int index)
