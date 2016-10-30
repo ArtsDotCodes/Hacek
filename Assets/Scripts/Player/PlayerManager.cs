@@ -50,7 +50,7 @@ public class PlayerManager : MonoBehaviour {
                     }
                     node = node.Next;
                 }
-                currentRail.GetComponent<RailHandler>().SetIsPlayerRail(false);
+
                 currentRail = closestRail;
                 currentRail.GetComponent<RailHandler>().SetIsPlayerRail(true);
             }
