@@ -12,13 +12,9 @@ public class PlayerManager : MonoBehaviour {
     
     //audio stuff
     [SerializeField] private AudioClip[] railSounds;
-    [SerializeField] private AudioClip[] sparseSounds;
-    [SerializeField] private AudioClip[] mediumSounds;
-    [SerializeField] private AudioClip[] denseSounds;
-    private AudioSource source, source2; //lol source 2
+    private AudioSource source;
     private AudioClip currentRailSound;
     private float railSoundTimer;
-    private float mediumThreshold, denseThreshold;
     private int railSoundIndex;
 
     private enum SoundState {sparse, medium, dense};
@@ -36,10 +32,6 @@ public class PlayerManager : MonoBehaviour {
         source.clip = currentRailSound;
         source.Play();
 
-        source2 = gameObject.AddComponent<AudioSource>();
-        source2.loop = false;
-        mediumThreshold = 5.0f;
-        denseThreshold = 15.0f;
         soundState = SoundState.sparse;
     }
 
@@ -61,6 +53,7 @@ public class PlayerManager : MonoBehaviour {
             railSoundTimer -= currentRailSound.length;
 
         //Ambient mountain sounds
+        /*
         if (!source2.isPlaying)
         {
             if(soundState == SoundState.dense)
@@ -98,6 +91,7 @@ public class PlayerManager : MonoBehaviour {
             source2.clip = sparseSounds[Random.Range(0, sparseSounds.Length)];
             source2.Play();
         }
+        */
     }
 
     void FixedUpdate()

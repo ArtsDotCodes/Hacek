@@ -31,11 +31,7 @@ public class RailHandler : MonoBehaviour {
         {
             if (!markedForDeletion)
             {
-                //smooth out rotations somewhat
-                //Quaternion current = transform.rotation, target;
                 transform.LookAt(destinations[destinationIndex]);
-                //target = transform.rotation;
-                //transform.rotation = Quaternion.Lerp(current, target, rotationSpeed * Time.fixedDeltaTime);
 
                 Vector3 nextMove = transform.position + ((transform.forward * Time.fixedDeltaTime * speed)) / (slopeFactor * 2.0f);
                 if (Vector3.Distance(transform.position, destinations[destinationIndex]) < Vector3.Distance(nextMove, destinations[destinationIndex])
