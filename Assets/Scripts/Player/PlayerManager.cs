@@ -46,40 +46,50 @@ public class PlayerManager : MonoBehaviour {
     {
         currentRail.GetComponent<RailHandler>().SetIsPlayerRail(false);
 
-        if (left)
+        int i = 0;
+        do
         {
-            if (GameManager.GetRailList().Find(currentRail).Next != null)
-                currentRail = GameManager.GetRailList().Find(currentRail).Next.Value;
-            else
-                currentRail = GameManager.GetRailList().First.Value;
+            if (++i > 1000)
+                break;
 
-            if (railSoundIndex == railSounds.Length - 1)
-                railSoundIndex = 0;
-            else
-                ++railSoundIndex;
-        }
+            if (left)
+            {
+                if (GameManager.GetRailList().Find(currentRail).Next != null)
+                    currentRail = GameManager.GetRailList().Find(currentRail).Next.Value;
+                else
+                    currentRail = GameManager.GetRailList().First.Value;
 
-        else if (right)
-        {
-            if (GameManager.GetRailList().Find(currentRail).Previous != null)
-                currentRail = GameManager.GetRailList().Find(currentRail).Previous.Value;
-            else
-                currentRail = GameManager.GetRailList().Last.Value;
+                if (railSoundIndex == railSounds.Length - 1)
+                    railSoundIndex = 0;
+                else
+                    ++railSoundIndex;
+            }
 
-            if (railSoundIndex == 0)
-                railSoundIndex = railSounds.Length - 1;
-            else
-                --railSoundIndex;
-        }
+            else if (right)
+            {
+                if (GameManager.GetRailList().Find(currentRail).Previous != null)
+                    currentRail = GameManager.GetRailList().Find(currentRail).Previous.Value;
+                else
+                    currentRail = GameManager.GetRailList().Last.Value;
+
+                if (railSoundIndex == 0)
+                    railSoundIndex = railSounds.Length - 1;
+                else
+                    --railSoundIndex;
+            }
+        } while (currentRail.GetComponent<RailHandler>().IsMarkedForDeletion());
 
         currentRail.GetComponent<RailHandler>().SetIsPlayerRail(true);
 
         currentRailSound = railSounds[railSoundIndex];
-        source.clip = currentRailSound;
-        if (railSoundTimer > currentRailSound.length)
-            railSoundTimer -= currentRailSound.length;
-        source.Play();
-        source.time = railSoundTimer;
+        if(source != null)
+        {
+            source.clip = currentRailSound;
+            if (railSoundTimer > currentRailSound.length)
+                railSoundTimer -= currentRailSound.length;
+            source.Play();
+            source.time = railSoundTimer;
+        }
     }
 
     private void HandleAudio()

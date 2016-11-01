@@ -131,4 +131,9 @@ public class RailHandler : MonoBehaviour {
     {
         return isPlayerRail;
     }
+
+    public bool IsMarkedForDeletion()
+    {
+        return markedForDeletion;
+    }
 }
