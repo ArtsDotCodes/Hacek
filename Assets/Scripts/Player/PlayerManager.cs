@@ -4,11 +4,12 @@ using System.Collections.Generic;
 public class PlayerManager : MonoBehaviour {
 
     [SerializeField] private float lerpSpeed;
+    [SerializeField] private float flySpeed;
 
     private GameObject currentRail;
     private GameObject cam;
     private static bool reachedEnd;
-    private static bool left, right;
+    private static bool left, right, down, up;
     
     //audio stuff
     [SerializeField] private AudioClip[] railSounds;
@@ -16,9 +17,6 @@ public class PlayerManager : MonoBehaviour {
     private AudioClip currentRailSound;
     private float railSoundTimer;
     private int railSoundIndex;
-
-    private enum SoundState {sparse, medium, dense};
-    private SoundState soundState;
 
     void Start()
     {
@@ -31,67 +29,72 @@ public class PlayerManager : MonoBehaviour {
         source.loop = true;
         source.clip = currentRailSound;
         source.Play();
-
-        soundState = SoundState.sparse;
     }
 
 	void Update ()
     {
-        if (left || right)
+        if (left || right && !reachedEnd)
+        {
             HandleRailSwitch();
+            SetAllFlagsFalse();
+        }    
 
         HandleAudio();
-
-        SetAllFlagsFalse();
 	}
+
+    private void HandleRailSwitch()
+    {
+        currentRail.GetComponent<RailHandler>().SetIsPlayerRail(false);
+
+        if (left)
+        {
+            if (GameManager.GetRailList().Find(currentRail).Next != null)
+                currentRail = GameManager.GetRailList().Find(currentRail).Next.Value;
+            else
+                currentRail = GameManager.GetRailList().First.Value;
+
+            if (railSoundIndex == railSounds.Length - 1)
+                railSoundIndex = 0;
+            else
+                ++railSoundIndex;
+        }
+
+        else if (right)
+        {
+            if (GameManager.GetRailList().Find(currentRail).Previous != null)
+                currentRail = GameManager.GetRailList().Find(currentRail).Previous.Value;
+            else
+                currentRail = GameManager.GetRailList().Last.Value;
+
+            if (railSoundIndex == 0)
+                railSoundIndex = railSounds.Length - 1;
+            else
+                --railSoundIndex;
+        }
+
+        currentRail.GetComponent<RailHandler>().SetIsPlayerRail(true);
+
+        currentRailSound = railSounds[railSoundIndex];
+        source.clip = currentRailSound;
+        if (railSoundTimer > currentRailSound.length)
+            railSoundTimer -= currentRailSound.length;
+        source.Play();
+        source.time = railSoundTimer;
+    }
 
     private void HandleAudio()
     {
         //Rail sounds
-        railSoundTimer += Time.deltaTime;
-        if (railSoundTimer > currentRailSound.length)
-            railSoundTimer -= currentRailSound.length;
-
-        //Ambient mountain sounds
-        /*
-        if (!source2.isPlaying)
+        if (!reachedEnd)
         {
-            if(soundState == SoundState.dense)
-            {
-                source2.clip = denseSounds[Random.Range(0, denseSounds.Length)];
-                source2.Play();
-            }
-            else if(soundState == SoundState.medium)
-            {
-                source2.clip = mediumSounds[Random.Range(0, mediumSounds.Length)];
-                source2.Play();
-            }
-            else
-            {
-                source2.clip = sparseSounds[Random.Range(0, sparseSounds.Length)];
-                source2.Play();
-            }
+            railSoundTimer += Time.deltaTime;
+            if (railSoundTimer > currentRailSound.length)
+                railSoundTimer -= currentRailSound.length;
         }
-
-        if(transform.position.y >= denseThreshold && soundState != SoundState.dense)
+        else if(source != null)
         {
-            soundState = SoundState.dense;
-            source2.clip = denseSounds[Random.Range(0, denseSounds.Length)];
-            source2.Play();
+            Destroy(source);
         }
-        else if(transform.position.y >= mediumThreshold && transform.position.y < denseThreshold && soundState != SoundState.medium)
-        {
-            soundState = SoundState.medium;
-            source2.clip = mediumSounds[Random.Range(0, mediumSounds.Length)];
-            source2.Play();
-        }
-        else if(transform.position.y < mediumThreshold && soundState != SoundState.sparse)
-        {
-            soundState = SoundState.sparse;
-            source2.clip = sparseSounds[Random.Range(0, sparseSounds.Length)];
-            source2.Play();
-        }
-        */
     }
 
     void FixedUpdate()
@@ -127,46 +130,24 @@ public class PlayerManager : MonoBehaviour {
                 currentRail.GetComponent<RailHandler>().SetIsPlayerRail(true);
             }
         }
+        else
+        {
+            HandleFreeCam();
+        }
     }
 
-    private void HandleRailSwitch()
+    private void HandleFreeCam()
     {
-        currentRail.GetComponent<RailHandler>().SetIsPlayerRail(false);
-
-        if (left)
-        {
-            if (GameManager.GetRailList().Find(currentRail).Next != null)
-                currentRail = GameManager.GetRailList().Find(currentRail).Next.Value;
-            else
-                currentRail = GameManager.GetRailList().First.Value;
-
-            if (railSoundIndex == railSounds.Length - 1)
-                railSoundIndex = 0;
-            else
-                ++railSoundIndex;
-        }
-            
+        if (up)
+            transform.position += SteamVR_Render.Top().transform.forward * (Time.fixedDeltaTime * flySpeed);
+        else if (down)
+            transform.position += -SteamVR_Render.Top().transform.forward * (Time.fixedDeltaTime * flySpeed);
+        else if (left)
+            transform.position += Vector3.Cross(SteamVR_Render.Top().transform.forward, Vector3.up) * (Time.fixedDeltaTime * flySpeed);
         else if (right)
-        {
-            if (GameManager.GetRailList().Find(currentRail).Previous != null)
-                currentRail = GameManager.GetRailList().Find(currentRail).Previous.Value;
-            else
-                currentRail = GameManager.GetRailList().Last.Value;
+            transform.position += -Vector3.Cross(SteamVR_Render.Top().transform.forward, Vector3.up) * (Time.fixedDeltaTime * flySpeed);
 
-            if (railSoundIndex == 0)
-                railSoundIndex = railSounds.Length-1;
-            else
-                --railSoundIndex;
-        }
-
-        currentRail.GetComponent<RailHandler>().SetIsPlayerRail(true);
-
-        currentRailSound = railSounds[railSoundIndex];
-        source.clip = currentRailSound;
-        if (railSoundTimer > currentRailSound.length)
-            railSoundTimer -= currentRailSound.length;
-        source.Play();
-        source.time = railSoundTimer;
+        cam.transform.position = transform.position + Vector3.up;
     }
 
     public void SetCurrentRail(int index)
@@ -191,10 +172,22 @@ public class PlayerManager : MonoBehaviour {
         right = true;
     }
 
-    private void SetAllFlagsFalse()
+    public static void SetDown()
+    {
+        down = true;
+    }
+
+    public static void SetUp()
+    {
+        up = true;
+    }
+
+    public void SetAllFlagsFalse()
     {
         left = false;
         right = false;
+        up = false;
+        down = false;
     }
 
     public static void SetReachedEnd(bool reachedEnd)

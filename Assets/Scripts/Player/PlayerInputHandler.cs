@@ -11,6 +11,8 @@ public class PlayerInputHandler : MonoBehaviour {
     {
         controller1.PadClicked += HandlePadClick;
         controller2.PadClicked += HandlePadClick;
+        controller1.PadUnclicked += HandlePadUnclick;
+        controller2.PadUnclicked += HandlePadUnclick;
     }
 	
 	void Update () {
@@ -34,9 +36,24 @@ public class PlayerInputHandler : MonoBehaviour {
 
     private void HandlePadClick(object sender, ClickedEventArgs e)
     {
-        if(e.padX < 0.0f)
-            PlayerManager.SetLeft();
+        if(Mathf.Abs(e.padX) > Mathf.Abs(e.padY))
+        {
+            if (e.padX < 0.0f)
+                PlayerManager.SetLeft();
+            else
+                PlayerManager.SetRight();
+        }
         else
-            PlayerManager.SetRight();
+        {
+            if (e.padY < 0.0f)
+                PlayerManager.SetDown();
+            else
+                PlayerManager.SetUp();
+        }
+    }
+
+    private void HandlePadUnclick(object sender, ClickedEventArgs e)
+    {
+        FindObjectOfType<PlayerManager>().SetAllFlagsFalse();
     }
 }

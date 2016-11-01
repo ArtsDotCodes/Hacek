@@ -18,21 +18,42 @@ public class AmbientSourceSpawner : MonoBehaviour {
             go.transform.position += Vector3.up;
             go.transform.parent = ambienceContainer.transform;
             go.GetComponent<AudioSource>().clip = scarseSources[Random.Range(0, scarseSources.Length)];
+            go.GetComponent<AudioSource>().maxDistance = 10.0f;
             go.GetComponent<AudioSource>().Play();
 
             go = (GameObject)Instantiate(source, DistributeCircle(Vector3.zero, 62, i), transform.rotation);
             go.transform.position += Vector3.up * 5.0f;
             go.transform.parent = ambienceContainer.transform;
             go.GetComponent<AudioSource>().clip = mediumSources[Random.Range(0, mediumSources.Length)];
+            go.GetComponent<AudioSource>().maxDistance = 20.0f;
             go.GetComponent<AudioSource>().Play();
 
             go = (GameObject)Instantiate(source, DistributeCircle(Vector3.zero, 50, i), transform.rotation);
             go.transform.position += Vector3.up * 15.0f;
             go.transform.parent = ambienceContainer.transform;
             go.GetComponent<AudioSource>().clip = denseSources[Random.Range(0, denseSources.Length)];
+            go.GetComponent<AudioSource>().maxDistance = 30.0f;
             go.GetComponent<AudioSource>().Play();
         }
-	}
+
+        go = (GameObject)Instantiate(source, Vector3.zero + Vector3.up*3.0f, transform.rotation);
+        go.transform.parent = ambienceContainer.transform;
+        go.GetComponent<AudioSource>().clip = scarseSources[Random.Range(0, scarseSources.Length)];
+        go.GetComponent<AudioSource>().maxDistance = 25.0f;
+        go.GetComponent<AudioSource>().Play();
+
+        go = (GameObject)Instantiate(source, Vector3.zero + Vector3.up * 3.0f, transform.rotation);
+        go.transform.parent = ambienceContainer.transform;
+        go.GetComponent<AudioSource>().clip = mediumSources[Random.Range(0, mediumSources.Length)];
+        go.GetComponent<AudioSource>().maxDistance = 25.0f;
+        go.GetComponent<AudioSource>().Play();
+
+        go = (GameObject)Instantiate(source, Vector3.zero + Vector3.up * 3.0f, transform.rotation);
+        go.transform.parent = ambienceContainer.transform;
+        go.GetComponent<AudioSource>().clip = denseSources[Random.Range(0, denseSources.Length)];
+        go.GetComponent<AudioSource>().maxDistance = 25.0f;
+        go.GetComponent<AudioSource>().Play();
+    }
 
     private Vector3 DistributeCircle(Vector3 center, float radius, int index)
     {
