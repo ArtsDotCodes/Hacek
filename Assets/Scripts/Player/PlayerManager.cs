@@ -8,7 +8,7 @@ public class PlayerManager : MonoBehaviour {
 
     private GameObject currentRail;
     private GameObject cam;
-    private static bool reachedEnd;
+    private static bool reachedEnd = true;
     private static bool left, right, down, up;
     
     //audio stuff
@@ -33,12 +33,6 @@ public class PlayerManager : MonoBehaviour {
 
 	void Update ()
     {
-        if (left || right && !reachedEnd)
-        {
-            HandleRailSwitch();
-            SetAllFlagsFalse();
-        }    
-
         HandleAudio();
 	}
 
@@ -109,53 +103,20 @@ public class PlayerManager : MonoBehaviour {
 
     void FixedUpdate()
     {
-        if (!reachedEnd)
-        {
-            if (currentRail != null)
-            {
-                Vector3 newPosition = Vector3.Lerp(transform.position, currentRail.transform.position + Vector3.up, Time.fixedDeltaTime * lerpSpeed);
-                transform.LookAt(newPosition);
-                transform.position = newPosition;
-                cam.transform.position = newPosition + Vector3.up;
-            }
-            else
-            {
-                LinkedListNode<GameObject> node = GameManager.GetRailList().First;
-                GameObject closestRail = null;
-                while (node != null)
-                {
-                    if (closestRail == null)
-                    {
-                        closestRail = node.Value;
-                    }
-                    else
-                    {
-                        if (Vector3.Distance(transform.position, node.Value.transform.position) < Vector3.Distance(transform.position, closestRail.transform.position))
-                            closestRail = node.Value;
-                    }
-                    node = node.Next;
-                }
-
-                currentRail = closestRail;
-                currentRail.GetComponent<RailHandler>().SetIsPlayerRail(true);
-            }
-        }
-        else
-        {
-            HandleFreeCam();
-        }
+        HandleFreeCam();
+        SetAllFlagsFalse();
     }
 
     private void HandleFreeCam()
     {
         if (up)
-            transform.position += SteamVR_Render.Top().transform.forward * (Time.fixedDeltaTime * flySpeed);
-        else if (down)
-            transform.position += -SteamVR_Render.Top().transform.forward * (Time.fixedDeltaTime * flySpeed);
-        else if (left)
-            transform.position += Vector3.Cross(SteamVR_Render.Top().transform.forward, Vector3.up) * (Time.fixedDeltaTime * flySpeed);
-        else if (right)
-            transform.position += -Vector3.Cross(SteamVR_Render.Top().transform.forward, Vector3.up) * (Time.fixedDeltaTime * flySpeed);
+            transform.position += transform.forward * (Time.fixedDeltaTime * flySpeed); 
+        if (down)
+            transform.position += -transform.forward * (Time.fixedDeltaTime * flySpeed);
+        if (left)
+            transform.position += Vector3.Cross(transform.forward, Vector3.up) * (Time.fixedDeltaTime * flySpeed);
+        if (right)
+            transform.position += -Vector3.Cross(transform.forward, Vector3.up) * (Time.fixedDeltaTime * flySpeed);
 
         cam.transform.position = transform.position + Vector3.up;
     }
